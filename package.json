@@ -1,0 +1,30 @@
+{
+  "name": "gtm-icp-score",
+  "version": "1.0.0",
+  "description": "Declarative ICP scoring engine — ESLint for your Ideal Customer Profile",
+  "type": "module",
+  "main": "src/engine.js",
+  "exports": {
+    ".": "./src/engine.js",
+    "./loader": "./src/loader.js",
+    "./validator": "./src/validator.js"
+  },
+  "bin": { "icp-score": "./bin/cli.js" },
+  "scripts": {
+    "test": "node --test",
+    "start": "node bin/cli.js"
+  },
+  "keywords": ["icp", "scoring", "gtm", "sales", "account-scoring", "ideal-customer-profile"],
+  "author": "Stephen Stilwell",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stephenstilwell/gtm-icp-score.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stephenstilwell/gtm-icp-score/issues"
+  },
+  "homepage": "https://github.com/stephenstilwell/gtm-icp-score#readme",
+  "license": "MIT",
+  "engines": { "node": ">=20.0.0" },
+  "dependencies": { "yaml": "^2.3.4" }
+}

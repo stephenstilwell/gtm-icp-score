@@ -1,0 +1,195 @@
+metadata:
+  name: "Developer Tools ICP"
+  version: "1.0.0"
+  description: "ICP for developer tools targeting engineering-led organizations"
+  author: "GTM Team"
+  last_updated: "2024-01-15"
+
+disqualifiers:
+  - field: revenue
+    operator: less_than
+    value: 500000
+    reason: "Revenue below $500K minimum"
+  - field: employee_count
+    operator: less_than
+    value: 5
+    reason: "Too few employees for team adoption"
+  - field: industry
+    operator: in
+    value: [Government, Non-Profit]
+    reason: "Industry not in target market"
+
+scoring:
+  technographics:
+    weight: 40
+    attributes:
+      - field: tech_stack
+        rule: contains_any
+        values: [React, Angular, Vue, Node.js, Python, Go, Rust, Kubernetes, Docker, Terraform, TypeScript, GraphQL]
+        match_scoring:
+          "5+": 100
+          "3-4": 80
+          "2": 60
+          "1": 30
+      - field: has_api
+        rule: exists
+        score_if_present: 100
+        score_if_missing: 10
+      - field: cloud_provider
+        rule: exact_match
+        values:
+          AWS: 100
+          GCP: 100
+          Azure: 90
+          Multi-Cloud: 100
+      - field: engineering_blog
+        rule: exists
+        score_if_present: 70
+        score_if_missing: 0
+  engagement:
+    weight: 30
+    attributes:
+      - field: website_visits
+        rule: threshold
+        thresholds:
+          - min: 30
+            score: 100
+          - min: 15
+            score: 75
+          - min: 5
+            score: 40
+      - field: content_downloads
+        rule: threshold
+        thresholds:
+          - min: 10
+            score: 100
+          - min: 5
+            score: 75
+          - min: 2
+            score: 50
+          - min: 1
+            score: 25
+      - field: demo_requested
+        rule: exists
+        score_if_present: 100
+        score_if_missing: 0
+      - field: github_stars
+        rule: threshold
+        thresholds:
+          - min: 1000
+            score: 100
+          - min: 100
+            score: 70
+          - min: 10
+            score: 40
+  firmographics:
+    weight: 20
+    attributes:
+      - field: revenue
+        rule: range
+        ranges:
+          - min: 50000000
+            max: null
+            score: 100
+          - min: 10000000
+            max: 50000000
+            score: 85
+          - min: 5000000
+            max: 10000000
+            score: 70
+          - min: 1000000
+            max: 5000000
+            score: 50
+          - min: 500000
+            max: 1000000
+            score: 30
+      - field: employee_count
+        rule: range
+        ranges:
+          - min: 200
+            max: null
+            score: 100
+          - min: 50
+            max: 200
+            score: 80
+          - min: 20
+            max: 50
+            score: 60
+          - min: 5
+            max: 20
+            score: 30
+      - field: industry
+        rule: exact_match
+        values:
+          Technology: 100
+          Financial Services: 80
+          Healthcare: 60
+          Media: 70
+          Gaming: 90
+          E-Commerce: 75
+      - field: headquarters_country
+        rule: exact_match
+        values:
+          US: 100
+          UK: 90
+          Canada: 90
+          Germany: 85
+          Israel: 95
+          Australia: 80
+  buying_signals:
+    weight: 10
+    attributes:
+      - field: budget_confirmed
+        rule: exists
+        score_if_present: 100
+        score_if_missing: 0
+      - field: decision_timeline
+        rule: exact_match
+        values:
+          immediate: 100
+          this_quarter: 80
+          next_quarter: 40
+          next_year: 10
+      - field: champion_identified
+        rule: exists
+        score_if_present: 90
+        score_if_missing: 0
+      - field: competitor_using
+        rule: exact_match
+        values:
+          competitor_a: 80
+          competitor_b: 70
+          in_house: 60
+          none: 20
+
+tiers:
+  - name: tier_1
+    min_score: 80
+    action: solutions_engineer
+  - name: tier_2
+    min_score: 60
+    action: developer_advocate_outreach
+  - name: tier_3
+    min_score: 40
+    action: community_nurture
+  - name: disqualified
+    min_score: 0
+    action: archive
+
+signals:
+  - name: recent_funding
+    field: recent_funding_date
+    boost: 15
+    decay_days: 90
+  - name: exec_hiring
+    field: exec_hiring_date
+    boost: 10
+    decay_days: 60
+  - name: open_source_contribution
+    field: oss_contribution_date
+    boost: 12
+    decay_days: 120
+  - name: conference_speaking
+    field: conference_date
+    boost: 8
+    decay_days: 90

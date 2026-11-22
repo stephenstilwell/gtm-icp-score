@@ -1,0 +1,165 @@
+metadata:
+  name: "B2B SaaS Mid-Market"
+  version: "1.0.0"
+  description: "ICP for B2B SaaS targeting mid-market companies"
+  author: "GTM Team"
+  last_updated: "2024-01-15"
+
+disqualifiers:
+  - field: revenue
+    operator: less_than
+    value: 1000000
+    reason: "Revenue below $1M minimum"
+  - field: employee_count
+    operator: less_than
+    value: 10
+    reason: "Too few employees"
+  - field: industry
+    operator: in
+    value: [Government, Education, Non-Profit]
+    reason: "Industry not in target market"
+
+scoring:
+  firmographics:
+    weight: 30
+    attributes:
+      - field: revenue
+        rule: range
+        ranges:
+          - min: 10000000
+            max: null
+            score: 100
+          - min: 5000000
+            max: 10000000
+            score: 80
+          - min: 1000000
+            max: 5000000
+            score: 50
+      - field: employee_count
+        rule: range
+        ranges:
+          - min: 500
+            max: null
+            score: 100
+          - min: 200
+            max: 500
+            score: 80
+          - min: 50
+            max: 200
+            score: 60
+          - min: 10
+            max: 50
+            score: 30
+      - field: industry
+        rule: exact_match
+        values:
+          Technology: 100
+          Financial Services: 90
+          Healthcare: 80
+          Manufacturing: 60
+          Retail: 50
+      - field: headquarters_country
+        rule: exact_match
+        values:
+          US: 100
+          UK: 90
+          Canada: 85
+          Germany: 80
+          Australia: 75
+  technographics:
+    weight: 25
+    attributes:
+      - field: tech_stack
+        rule: contains_any
+        values: [React, Angular, Vue, Node.js, Python, Go, Kubernetes, Docker]
+        match_scoring:
+          "4+": 100
+          "2-3": 70
+          "1": 40
+      - field: has_api
+        rule: exists
+        score_if_present: 80
+        score_if_missing: 0
+      - field: cloud_provider
+        rule: exact_match
+        values:
+          AWS: 100
+          GCP: 95
+          Azure: 90
+  engagement:
+    weight: 20
+    attributes:
+      - field: website_visits
+        rule: threshold
+        thresholds:
+          - min: 20
+            score: 100
+          - min: 10
+            score: 70
+          - min: 5
+            score: 40
+      - field: content_downloads
+        rule: threshold
+        thresholds:
+          - min: 5
+            score: 100
+          - min: 2
+            score: 60
+          - min: 1
+            score: 30
+      - field: demo_requested
+        rule: exists
+        score_if_present: 100
+        score_if_missing: 0
+  buying_signals:
+    weight: 25
+    attributes:
+      - field: budget_confirmed
+        rule: exists
+        score_if_present: 100
+        score_if_missing: 0
+      - field: decision_timeline
+        rule: exact_match
+        values:
+          immediate: 100
+          this_quarter: 80
+          next_quarter: 50
+          next_year: 20
+      - field: champion_identified
+        rule: exists
+        score_if_present: 90
+        score_if_missing: 0
+      - field: competitor_using
+        rule: exact_match
+        values:
+          competitor_a: 80
+          competitor_b: 70
+          none: 30
+
+tiers:
+  - name: tier_1
+    min_score: 80
+    action: enterprise_ae
+  - name: tier_2
+    min_score: 60
+    action: sdr_outbound
+  - name: tier_3
+    min_score: 40
+    action: nurture_sequence
+  - name: disqualified
+    min_score: 0
+    action: archive
+
+signals:
+  - name: recent_funding
+    field: recent_funding_date
+    boost: 15
+    decay_days: 90
+  - name: exec_hiring
+    field: exec_hiring_date
+    boost: 10
+    decay_days: 60
+  - name: product_launch
+    field: product_launch_date
+    boost: 8
+    decay_days: 45

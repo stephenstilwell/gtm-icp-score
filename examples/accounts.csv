@@ -1,0 +1,22 @@
+account_id,company_name,revenue,employee_count,industry,headquarters_country,tech_stack,has_api,cloud_provider,website_visits,content_downloads,demo_requested,budget_confirmed,decision_timeline,champion_identified,competitor_using,recent_funding_date,exec_hiring_date,product_launch_date
+acme-corp,Acme Corp,25000000,800,Technology,US,"React;Node.js;Python;Docker;Kubernetes",true,AWS,35,8,true,true,immediate,true,competitor_a,2024-01-05,2024-01-10,2023-12-20
+techflow-inc,TechFlow Inc,18000000,600,Technology,US,"React;Go;Kubernetes;Docker;Python",true,GCP,28,6,true,true,this_quarter,true,competitor_b,2023-12-15,,2023-11-30
+cloudnova-systems,CloudNova Systems,15000000,550,Financial Services,UK,"Angular;Node.js;Docker;Python;Go",true,AWS,42,10,true,true,immediate,true,competitor_a,,2024-01-08,
+datastream-io,DataStream IO,12000000,450,Technology,US,"React;Vue;Node.js;Docker",true,GCP,22,7,true,true,this_quarter,true,none,2023-11-20,2023-12-01,2024-01-12
+apex-digital,Apex Digital,8000000,300,Technology,Canada,"React;Node.js;Docker",true,AWS,15,4,true,false,this_quarter,true,competitor_b,,,
+blueshift-tech,Blueshift Tech,7500000,250,Healthcare,US,"Angular;Python;Docker",true,Azure,12,3,false,false,next_quarter,true,none,,2023-12-20,
+corelogic-solutions,CoreLogic Solutions,6000000,180,Financial Services,US,"Vue;Node.js",true,AWS,18,5,true,true,next_quarter,false,competitor_a,,,2023-11-15
+nexgen-platforms,NexGen Platforms,9000000,350,Technology,Germany,"React;Go;Kubernetes",true,GCP,8,2,false,false,this_quarter,true,competitor_b,2023-10-01,,
+quantum-analytics,Quantum Analytics,5500000,200,Technology,US,"Python;React",true,AWS,11,3,true,false,next_quarter,false,none,,,
+skyward-data,Skyward Data,7000000,280,Manufacturing,UK,"Node.js;Docker",false,Azure,14,2,false,true,this_quarter,false,competitor_a,,2023-11-10,
+ironclad-services,Ironclad Services,3000000,80,Manufacturing,US,"Python",false,,6,1,false,false,next_year,false,none,,,
+mapleleaf-tech,Mapleleaf Tech,2500000,60,Retail,Canada,"React",true,,7,1,false,false,next_quarter,false,none,,,
+pioneer-systems,Pioneer Systems,4000000,100,Healthcare,Australia,"Angular;Node.js",false,Azure,4,0,false,false,next_year,false,competitor_b,,,
+redstone-group,Redstone Group,2000000,45,Manufacturing,Germany,,false,,3,1,false,false,next_year,false,none,,,
+silverline-co,Silverline Co,1500000,30,Retail,UK,"Vue",false,,5,0,false,false,,false,none,,,
+verde-solutions,Verde Solutions,3500000,70,Healthcare,US,"Python;Docker",true,AWS,9,2,false,false,next_year,false,none,,,
+tiny-startup,Tiny Startup,200000,15,Technology,US,"React;Node.js",true,AWS,20,5,true,true,immediate,true,competitor_a,2024-01-01,,
+edu-first,EduFirst,8000000,400,Education,US,"Angular;Python;Docker",true,Azure,25,6,true,true,this_quarter,true,competitor_b,,2023-12-15,
+gov-tech,GovTech Solutions,15000000,700,Government,US,"React;Node.js;Docker;Kubernetes",true,AWS,30,8,true,true,immediate,true,none,2023-11-01,,
+nonprofit-org,Community Impact Org,5000000,150,Non-Profit,US,"Python;React",true,GCP,18,4,true,false,this_quarter,true,none,,,
+micro-co,Micro Co,1200000,8,Technology,US,"React",true,AWS,10,2,false,false,next_quarter,false,none,,,
