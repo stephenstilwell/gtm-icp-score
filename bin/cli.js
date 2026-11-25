@@ -6,7 +6,7 @@
 
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { scoreAccount, scoreAccounts, generateSummary } from '../src/engine.js';
+import { compareProfiles, scoreAccount, scoreAccounts, generateSummary } from '../src/engine.js';
 import { loadProfile, loadAccounts } from '../src/loader.js';
 import { validateProfile, generateTemplate } from '../src/validator.js';
 import { formatOutput, formatTable } from '../src/reporter.js';
@@ -31,7 +31,7 @@ function parseFlags(args) {
       flags.version = true;
     } else if (args[i] === '--no-color') {
       flags.noColor = true;
-    } else if (!args[i].startsWith('-')) {
+    } else if (args[i] === '-' || !args[i].startsWith('-')) {
       positional.push(args[i]);
     }
   }
@@ -51,6 +51,7 @@ COMMANDS
   explain <profile> <data>   Detailed score explanation for one account
   init                       Generate a starter ICP template
   summary <profile> <data>   Aggregate scoring statistics
+  compare <baseline> <candidate> <data>   Compare account scores and routing across profiles
 
 OPTIONS
   --format, -f <format>      Output format: table, json, csv, html (default: table)
@@ -67,6 +68,7 @@ EXAMPLES
   icp-score explain icp.yaml accounts.json --account acme-corp
   icp-score init > my-icp.yaml
   icp-score summary icp.yaml accounts.csv
+  icp-score compare icp.yaml proposed.yaml accounts.csv --format json
   cat accounts.json | icp-score run icp.yaml -
 `);
 }
@@ -107,6 +109,9 @@ async function main() {
         break;
       case 'summary':
         await summaryCommand(subPositional, flags);
+        break;
+      case 'compare':
+        await compareCommand(subPositional, flags);
         break;
       default:
         console.error(`Unknown command: ${command}`);
@@ -222,6 +227,46 @@ async function explainCommand(positional, flags) {
     console.log(JSON.stringify(explanation, null, 2));
   } else {
     console.log(formatExplanation(explanation, !flags.noColor));
+  }
+}
+
+async function compareCommand(positional, flags) {
+  if (positional.length !== 3) {
+    throw new Error('Usage: icp-score compare <baseline> <candidate> <data> [--format table|json]');
+  }
+  const format = flags.format || 'table';
+  if (!['table', 'json'].includes(format)) {
+    throw new Error('The compare command supports table and json output.');
+  }
+  const [baselinePath, candidatePath, dataPath] = positional;
+  const profiles = [];
+  for (const [label, file] of [['Baseline', baselinePath], ['Candidate', candidatePath]]) {
+    const profile = await loadProfile(resolve(file));
+    const validation = validateProfile(profile);
+    if (!validation.valid) {
+      throw new Error(`${label} profile ${file} failed validation:\n${validation.errors.join('\n')}`);
+    }
+    profiles.push(profile);
+  }
+
+  const accounts = await loadAccounts(dataPath === '-' ? '-' : resolve(dataPath));
+  const report = compareProfiles(...profiles, accounts);
+  const { totalAccounts, changedAccounts, changes } = report;
+  const rows = changes.map(({ inputRow, accountId, companyName, before, after, changedFields }) => {
+    const fields = changedFields.map((field) => `${field} ${before[field] ?? 'none'} -> ${after[field] ?? 'none'}`);
+    return `  #${inputRow} ${companyName} (${accountId}) | ${fields.join(' | ')}`;
+  });
+  const output = format === 'json' ? JSON.stringify({ baseline: baselinePath, candidate: candidatePath, ...report }, null, 2) : [
+    `ICP profile comparison (${baselinePath} -> ${candidatePath})`,
+    `${changedAccounts} of ${totalAccounts} account records changed.`,
+    ...rows,
+  ].join('\n');
+
+  if (flags.output) {
+    writeFileSync(resolve(flags.output), output + '\n', 'utf-8');
+    console.log(`Comparison written to ${flags.output}`);
+  } else {
+    console.log(output);
   }
 }
 

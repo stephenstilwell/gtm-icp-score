@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { execSync } from 'node:child_process';
+import { execSync, spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { existsSync, unlinkSync } from 'node:fs';
 
@@ -69,5 +69,28 @@ describe('CLI End-to-End', () => {
     assert.ok(stdout.includes('metadata:'));
     assert.ok(stdout.includes('disqualifiers:'));
     assert.ok(stdout.includes('scoring:'));
+  });
+
+  it('compares the same input rows even when account IDs are duplicated', () => {
+    const baseline = 'examples/b2b-saas.yaml';
+    const candidate = 'examples/dev-tools.yaml';
+    const input = 'account_id,company_name,industry,revenue,employee_count\n' +
+      'same,First company,Government,10000000,100\nsame,Second company,Technology,10000000,100\n';
+    const run = (profile) => spawnSync(process.execPath,
+      [cliPath, 'compare', baseline, profile, '-', '--format', 'json'], { input, encoding: 'utf8' });
+    const comparison = run(candidate);
+    assert.equal(comparison.status, 0, comparison.stderr);
+    const result = JSON.parse(comparison.stdout);
+    assert.equal(result.totalAccounts, 2);
+    assert.equal(result.changedAccounts + result.unchangedAccounts, 2);
+    assert.ok(result.changes.length > 0);
+    for (const change of result.changes) {
+      assert.equal(change.accountId, 'same');
+      assert.equal(change.companyName, ['First company', 'Second company'][change.inputRow - 1]);
+      assert.equal(change.scoreDelta, change.after.score - change.before.score);
+    }
+    const identical = run(baseline);
+    assert.equal(identical.status, 0, identical.stderr);
+    assert.deepEqual(JSON.parse(identical.stdout).changes, []);
   });
 });

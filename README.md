@@ -115,6 +115,16 @@ node bin/cli.js summary examples/b2b-saas.yaml examples/accounts.csv
 
 ---
 
+### 5. Compare ICP Profiles Before Changing Routing
+
+Run both profiles on one account export to see how a proposed scoring change affects scores, tiers, routing actions, disqualification, and confidence.
+
+```bash
+node bin/cli.js compare examples/b2b-saas.yaml examples/dev-tools.yaml examples/accounts.csv --format json
+```
+
+Both profiles use the same evaluation time for signal decay. The report counts changed and unchanged records and shows before and after values for each changed record. The `inputRow` is the 1-based account position, which distinguishes repeated or missing account IDs. Use `-` as the data path to read from stdin, or `-o comparison.json` to save JSON. The default output is a terminal summary.
+
 ## ICP Profile Specification (`icp.yaml`)
 
 An ICP profile is a YAML or JSON file containing 5 sections:
@@ -265,13 +275,14 @@ icp-score validate <profile>         Validate an ICP profile definition
 icp-score explain <profile> <data>   Detailed score explanation for one account
 icp-score init                       Generate a starter ICP template
 icp-score summary <profile> <data>   Aggregate scoring statistics
+icp-score compare <baseline> <candidate> <data>   Compare account scores and routing across profiles
 ```
 
 ### Options
 
 | Flag | Meaning |
 |---|---|
-| `--format, -f <format>` | Output format: `table`, `json`, `csv`, `html` (default: `table`) |
+| `--format, -f <format>` | Output format: `table`, `json`, `csv`, `html` (default: `table`). `compare` supports `table` and `json` |
 | `-o, --output <file>` | Write report or template directly to file |
 | `--account, -a <id>` | Account ID for the `explain` command |
 | `--no-color` | Disable ANSI terminal colors |

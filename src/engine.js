@@ -487,6 +487,42 @@ export function scoreAccounts(profile, accounts, options = {}) {
     });
 }
 
+/** Compare score and routing changes on the same accounts at a shared evaluation time. */
+export function compareProfiles(baseline, candidate, accounts, { now = new Date() } = {}) {
+  const snapshot = (result) => ({
+    score: result.totalScore,
+    tier: result.tier.name,
+    action: result.tier.action,
+    disqualified: result.disqualified,
+    confidencePercentage: result.confidence.percentage,
+  });
+  const changes = [];
+  for (const [index, account] of accounts.entries()) {
+    const original = scoreAccount(baseline, account, { now });
+    const before = snapshot(original);
+    const after = snapshot(scoreAccount(candidate, account, { now }));
+    const changedFields = Object.keys(before).filter((field) => before[field] !== after[field]);
+    if (changedFields.length > 0) {
+      changes.push({
+        inputRow: index + 1,
+        accountId: original.accountId,
+        companyName: original.companyName,
+        before,
+        after,
+        changedFields,
+        scoreDelta: after.score - before.score,
+      });
+    }
+  }
+  return {
+    evaluatedAt: now.toISOString(),
+    totalAccounts: accounts.length,
+    changedAccounts: changes.length,
+    unchangedAccounts: accounts.length - changes.length,
+    changes,
+  };
+}
+
 /**
  * Generate summary statistics from scored results
  * @param {Array<object>} results - array of ScoredAccount objects
